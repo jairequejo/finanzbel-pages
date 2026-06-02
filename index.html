@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Barbell Finance — Dashboard Antifragilidad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #050609;
+  --surface:   #0c0f1a;
+  --surface2:  #111827;
+  --border:    #1e293b;
+  --accent:    #6366f1;
+  --green:     #10b981;
+  --red:       #ef4444;
+  --amber:     #f59e0b;
+  --purple:    #a855f7;
+  --text:      #f1f5f9;
+  --muted:     #64748b;
+  --muted2:    #94a3b8;
+  --font:      'Space Grotesk', system-ui, -apple-system, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  padding: 2rem 1.25rem 4rem;
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+a { color: var(--accent); text-decoration: none; }
+
+/* ── Layout ── */
+.container { max-width: 1240px; margin: 0 auto; }
+
+/* ── Header ── */
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 1rem;
+  padding-bottom: 1.5rem; margin-bottom: 2.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.header-title { font-size: 2.4rem; font-weight: 800; letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #818cf8, #c084fc 60%, #38bdf8);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.header-sub { color: var(--muted2); font-size: 0.9rem; margin-top: 0.2rem; }
+.badge-lindy {
+  background: rgba(99,102,241,.12); color: var(--accent);
+  border: 1px solid rgba(99,102,241,.35);
+  padding: 0.35rem 0.9rem; border-radius: 9999px;
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap;
+}
+
+/* ── Diagnóstico ── */
+.diag-card {
+  background: linear-gradient(135deg, var(--surface) 0%, #130f2a 100%);
+  border: 1px solid var(--border);
+  border-radius: 20px; padding: 1.75rem 2rem; margin-bottom: 2rem;
+  position: relative; overflow: hidden;
+  box-shadow: 0 20px 40px -15px rgba(0,0,0,.6);
+}
+.diag-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse 60% 50% at 90% 10%, rgba(99,102,241,.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.diag-header {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;
+}
+.diag-title { font-size: 1.1rem; font-weight: 700; color: var(--muted2); text-transform: uppercase; letter-spacing: 0.07em; }
+.diag-badge {
+  font-size: 0.82rem; font-weight: 800; padding: 0.45rem 1.1rem;
+  border-radius: 8px; text-transform: uppercase; letter-spacing: 0.06em;
+  background: rgba(16,185,129,.14);
+  color: #10b981;
+  border: 1px solid rgba(16,185,129,.4);
+}
+.diag-consejo {
+  font-size: 1.05rem; line-height: 1.65; color: var(--text); margin-bottom: 1.25rem;
+}
+.taleb-quote {
+  border-left: 3px solid var(--accent); padding-left: 1rem;
+  color: var(--muted2); font-style: italic; font-size: 0.95rem; line-height: 1.6;
+}
+.taleb-quote strong { color: var(--accent); font-style: normal; }
+
+/* ── KPI Grid ── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1.25rem; margin-bottom: 2rem;
+}
+.kpi-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px; padding: 1.4rem 1.5rem;
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  position: relative; overflow: hidden;
+}
+.kpi-card::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at 80% 20%, rgba(99,102,241,.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+.kpi-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(99,102,241,.45);
+  box-shadow: 0 12px 30px -8px rgba(99,102,241,.25);
+}
+.kpi-label {
+  font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--muted); margin-bottom: 0.6rem;
+}
+.kpi-value {
+  font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1;
+}
+.kpi-sub { font-size: 0.78rem; color: var(--muted); margin-top: 0.5rem; }
+.kpi-icon { position: absolute; top: 1.2rem; right: 1.2rem; font-size: 1.6rem; opacity: .18; }
+
+/* ── Barbell visual ── */
+.barbell-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px; padding: 1.4rem 1.5rem;
+  margin-bottom: 2rem;
+}
+.barbell-title { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-bottom: 0.8rem; }
+
+/* ── Charts ── */
+.charts-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1.5rem; margin-bottom: 2rem;
+}
+@media (max-width: 860px) { .charts-grid { grid-template-columns: 1fr; } }
+
+.chart-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px; padding: 1.5rem;
+  transition: border-color .25s ease, box-shadow .25s ease;
+}
+.chart-card:hover {
+  border-color: rgba(99,102,241,.35);
+  box-shadow: 0 8px 25px -8px rgba(99,102,241,.15);
+}
+.chart-title {
+  font-size: 0.82rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.07em; color: var(--muted2);
+  border-left: 3px solid var(--accent); padding-left: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+.chart-wrap { width: 100%; overflow: visible; }
+
+/* ── Tabla ── */
+.table-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px; padding: 1.5rem;
+  overflow-x: auto; margin-bottom: 2rem;
+}
+.table-title {
+  font-size: 0.82rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.07em; color: var(--muted2);
+  border-left: 3px solid var(--accent); padding-left: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  padding: 0.65rem 1rem; font-size: 0.72rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.07em;
+  color: var(--muted); border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.table-row td {
+  padding: 0.8rem 1rem; border-bottom: 1px solid rgba(30,41,59,.7);
+  font-size: 0.88rem; vertical-align: middle;
+}
+.table-row:last-child td { border-bottom: none; }
+.table-row:hover td { background: rgba(99,102,241,.04); }
+.td-fecha { color: var(--muted); font-size: 0.82rem; white-space: nowrap; }
+.td-cat { font-weight: 600; }
+.td-desc { color: var(--muted2); }
+
+.type-badge {
+  display: inline-block; padding: 0.2rem 0.65rem;
+  border-radius: 6px; font-size: 0.75rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap;
+}
+.type-ingreso { background: rgba(16,185,129,.12); color: #34d399; border: 1px solid rgba(16,185,129,.25); }
+.type-gasto   { background: rgba(239,68,68,.12);  color: #f87171; border: 1px solid rgba(239,68,68,.25); }
+
+/* ── Stat strip ── */
+.stat-strip {
+  display: flex; flex-wrap: wrap; gap: 1rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 1rem 1.5rem;
+  margin-bottom: 2rem;
+}
+.stat-item { display: flex; flex-direction: column; gap: 0.15rem; }
+.stat-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; font-weight: 600; }
+.stat-val   { font-size: 1rem; font-weight: 700; }
+
+/* ── Footer ── */
+footer {
+  border-top: 1px solid var(--border); padding-top: 1.5rem;
+  text-align: center; color: var(--muted); font-size: 0.82rem;
+}
+footer em { color: var(--muted2); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div>
+      <div class="header-title">Barbell Finance</div>
+      <div class="header-sub">Sistema de Antifragilidad Financiera — Generado el 02 Jun 2026, 14:45</div>
+    </div>
+    <span class="badge-lindy">LINDY COMPATIBLE v4.0 &nbsp;&#9632;&nbsp; SVG NATIVO</span>
+  </header>
+
+  <!-- DIAGNÓSTICO DE FRAGILIDAD -->
+  <div class="diag-card">
+    <div class="diag-header">
+      <span class="diag-title">Diagnóstico de Exposición al Riesgo</span>
+      <span class="diag-badge">ANTIFRÁGIL</span>
+    </div>
+    <p class="diag-consejo">Tasa de ahorro excepcional. Estás acumulando opcionalidad y capacidad de absorber el caos del mercado. Sigue aplicando la Estrategia Barbell: protege el 90%, arriesga el 10%.</p>
+    <div class="taleb-quote">
+      <strong>Nassim Taleb:</strong>
+      "Tienes opcionalidad. Estás preparado para beneficiarte del desorden del mercado."
+    </div>
+  </div>
+
+  <!-- KPI GRID (4 tarjetas) -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Ingresos Totales</div>
+      <div class="kpi-value" style="color:var(--green)">s/. 488.00</div>
+      <div class="kpi-sub">3 fuente(s) de ingreso activa(s)</div>
+      <div class="kpi-icon">&#8679;</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Gastos Totales</div>
+      <div class="kpi-value" style="color:var(--red)">s/. 60.00</div>
+      <div class="kpi-sub">4 categoría(s) de gasto</div>
+      <div class="kpi-icon">&#8681;</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Balance Neto</div>
+      <div class="kpi-value" style="color:#10b981">s/. 428.00</div>
+      <div class="kpi-sub">Asimetría acumulada</div>
+      <div class="kpi-icon">&#9651;</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Tasa de Ahorro</div>
+      <div class="kpi-value" style="color:var(--purple)">87.7%</div>
+      <div class="kpi-sub">Capacidad de absorber caos</div>
+      <div class="kpi-icon">&#9670;</div>
+    </div>
+  </div>
+
+  <!-- STAT STRIP rápido -->
+  <div class="stat-strip">
+    <div class="stat-item">
+      <span class="stat-label">Transacciones</span>
+      <span class="stat-val">13</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-label">Meses registrados</span>
+      <span class="stat-val">1</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-label">Cat. de gasto</span>
+      <span class="stat-val">4</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-label">Promedio ingreso/mes</span>
+      <span class="stat-val">s/. 488</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-label">Promedio gasto/mes</span>
+      <span class="stat-val">s/. 60</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-label">Estado Barbell</span>
+      <span class="stat-val" style="color:#10b981">ANTIFRÁGIL</span>
+    </div>
+  </div>
+
+  <!-- BARRA BARBELL VISUAL -->
+  <div class="barbell-section">
+    <div class="barbell-title">Estrategia Barbell — Seguro vs. Riesgo (basado en tasa de ahorro)</div>
+    <div class="chart-wrap"><svg viewBox="0 0 440 60" width="100%" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gbSeg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#059669"/><stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+    <linearGradient id="gbRie" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#c084fc"/>
+    </linearGradient>
+  </defs>
+  <!-- Peso izquierdo (seguro) -->
+  <rect x="10" y="14" width="333" height="32" rx="6" fill="url(#gbSeg)"/>
+  <!-- Barra central -->
+  <rect x="10" y="27" width="380" height="6" rx="3" fill="#1e293b"/>
+  <!-- Peso derecho (riesgo) -->
+  <rect x="343" y="14" width="47" height="32" rx="6" fill="url(#gbRie)"/>
+  <!-- Labels -->
+  <text x="15" y="58" fill="#34d399" font-size="10" font-weight="700" font-family="system-ui,sans-serif">SEGURO 88%</text>
+  <text x="390" y="58" fill="#c084fc" font-size="10" font-weight="700" text-anchor="end" font-family="system-ui,sans-serif">RIESGO 12%</text>
+</svg></div>
+  </div>
+
+  <!-- GRÁFICOS SVG -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">Ingresos vs. Gastos por Mes</div>
+      <div class="chart-wrap"><svg viewBox="0 0 500 280" width="100%" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="gradIng" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#34d399"/>
+        <stop offset="100%" stop-color="#059669"/>
+      </linearGradient>
+      <linearGradient id="gradGas" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#f87171"/>
+        <stop offset="100%" stop-color="#dc2626"/>
+      </linearGradient>
+      <linearGradient id="gradBar1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#818cf8"/>
+        <stop offset="100%" stop-color="#4f46e5"/>
+      </linearGradient>
+      <linearGradient id="gradBar2" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#fb923c"/>
+        <stop offset="100%" stop-color="#ea580c"/>
+      </linearGradient>
+      <linearGradient id="gradBar3" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#f472b6"/>
+        <stop offset="100%" stop-color="#db2777"/>
+      </linearGradient>
+      <linearGradient id="gradBar4" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#38bdf8"/>
+        <stop offset="100%" stop-color="#0284c7"/>
+      </linearGradient>
+      <linearGradient id="gradBar5" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#c084fc"/>
+        <stop offset="100%" stop-color="#9333ea"/>
+      </linearGradient>
+    </defs><line x1="48" y1="40" x2="490" y2="40" stroke="#1e293b" stroke-width="1" stroke-dasharray="5,4"/><line x1="48" y1="85" x2="490" y2="85" stroke="#1e293b" stroke-width="1" stroke-dasharray="5,4"/><line x1="48" y1="130" x2="490" y2="130" stroke="#1e293b" stroke-width="1" stroke-dasharray="5,4"/><line x1="48" y1="175" x2="490" y2="175" stroke="#1e293b" stroke-width="1" stroke-dasharray="5,4"/><line x1="48" y1="220" x2="490" y2="220" stroke="#1e293b" stroke-width="1" stroke-dasharray="5,4"/><line x1="48" y1="220" x2="490" y2="220" stroke="#334155" stroke-width="1.5"/><rect x="350" y="8" width="12" height="12" rx="3" fill="url(#gradIng)"/><text x="366" y="19" fill="#9ca3af" font-size="10" font-family="system-ui,-apple-system,sans-serif">Ingresos</text><rect x="420" y="8" width="12" height="12" rx="3" fill="url(#gradGas)"/><text x="436" y="19" fill="#9ca3af" font-size="10" font-family="system-ui,-apple-system,sans-serif">Gastos</text><rect x="239.5" y="40.0" width="28.0" height="180.0" rx="4" fill="url(#gradIng)"/><rect x="270.5" y="197.9" width="28.0" height="22.1" rx="4" fill="url(#gradGas)"/><text x="253.5" y="35.0" fill="#34d399" font-size="9" text-anchor="middle" font-weight="700" font-family="system-ui,-apple-system,sans-serif">488</text><text x="284.5" y="192.9" fill="#f87171" font-size="9" text-anchor="middle" font-weight="700" font-family="system-ui,-apple-system,sans-serif">60</text><text x="269.0" y="246" fill="#6b7280" font-size="10" text-anchor="middle" font-family="system-ui,-apple-system,sans-serif">Jun 2026</text></svg></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Distribución de Gastos por Categoría</div>
+      <div class="chart-wrap"><svg viewBox="0 0 480 280" width="100%" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="gradIng" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#34d399"/>
+        <stop offset="100%" stop-color="#059669"/>
+      </linearGradient>
+      <linearGradient id="gradGas" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#f87171"/>
+        <stop offset="100%" stop-color="#dc2626"/>
+      </linearGradient>
+      <linearGradient id="gradBar1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#818cf8"/>
+        <stop offset="100%" stop-color="#4f46e5"/>
+      </linearGradient>
+      <linearGradient id="gradBar2" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#fb923c"/>
+        <stop offset="100%" stop-color="#ea580c"/>
+      </linearGradient>
+      <linearGradient id="gradBar3" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#f472b6"/>
+        <stop offset="100%" stop-color="#db2777"/>
+      </linearGradient>
+      <linearGradient id="gradBar4" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#38bdf8"/>
+        <stop offset="100%" stop-color="#0284c7"/>
+      </linearGradient>
+      <linearGradient id="gradBar5" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#c084fc"/>
+        <stop offset="100%" stop-color="#9333ea"/>
+      </linearGradient>
+    </defs><text x="20" y="34" fill="#e2e8f0" font-size="12" font-weight="600" font-family="system-ui,-apple-system,sans-serif">Ajuste</text><text x="68" y="34" fill="#475569" font-size="10" font-family="system-ui,-apple-system,sans-serif">41.7%</text><rect x="20" y="42" width="270" height="14" rx="7" fill="#1e293b"/><rect x="20" y="42" width="270.0" height="14" rx="7" fill="url(#gradBar1)"/><text x="300" y="53" fill="#f1f5f9" font-size="12" font-weight="700" font-family="system-ui,-apple-system,sans-serif">s/. 25.00</text><text x="20" y="94" fill="#e2e8f0" font-size="12" font-weight="600" font-family="system-ui,-apple-system,sans-serif">Suscripciones</text><text x="117" y="94" fill="#475569" font-size="10" font-family="system-ui,-apple-system,sans-serif">31.7%</text><rect x="20" y="102" width="270" height="14" rx="7" fill="#1e293b"/><rect x="20" y="102" width="205.2" height="14" rx="7" fill="url(#gradBar2)"/><text x="300" y="113" fill="#f1f5f9" font-size="12" font-weight="700" font-family="system-ui,-apple-system,sans-serif">s/. 19.00</text><text x="20" y="154" fill="#e2e8f0" font-size="12" font-weight="600" font-family="system-ui,-apple-system,sans-serif">Transporte</text><text x="96" y="154" fill="#475569" font-size="10" font-family="system-ui,-apple-system,sans-serif">18.3%</text><rect x="20" y="162" width="270" height="14" rx="7" fill="#1e293b"/><rect x="20" y="162" width="118.8" height="14" rx="7" fill="url(#gradBar3)"/><text x="300" y="173" fill="#f1f5f9" font-size="12" font-weight="700" font-family="system-ui,-apple-system,sans-serif">s/. 11.00</text><text x="20" y="214" fill="#e2e8f0" font-size="12" font-weight="600" font-family="system-ui,-apple-system,sans-serif">Comida</text><text x="68" y="214" fill="#475569" font-size="10" font-family="system-ui,-apple-system,sans-serif">8.3%</text><rect x="20" y="222" width="270" height="14" rx="7" fill="#1e293b"/><rect x="20" y="222" width="54.0" height="14" rx="7" fill="url(#gradBar4)"/><text x="300" y="233" fill="#f1f5f9" font-size="12" font-weight="700" font-family="system-ui,-apple-system,sans-serif">s/. 5.00</text></svg></div>
+    </div>
+  </div>
+
+  <!-- TABLA DE TRANSACCIONES -->
+  <div class="table-card">
+    <div class="table-title">Historial de Transacciones (más recientes primero)</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Tipo</th>
+          <th>Monto</th>
+          <th>Categoría</th>
+          <th>Descripción</th>
+        </tr>
+      </thead>
+      <tbody>
+                    <tr class="table-row">
+                        <td class="td-fecha">2026-06-02 14:45:45</td>
+                        <td><span class="type-badge type-gasto">GASTO</span></td>
+                        <td style="font-weight:700;color:#ef4444;font-family:'Space Grotesk',system-ui,sans-serif">-s/. 4.00</td>
+                        <td class="td-cat">Transporte</td>
+                        <td class="td-desc">Pasaje a la UPN</td>
+                    </tr>
+                    <tr class="table-row">
+                        <td class="td-fecha">2026-06-02 14:44:02</td>
+                        <td><span class="type-badge type-ingreso">INGRESO</span></td>
+                        <td style="font-weight:700;color:#10b981;font-family:'Space Grotesk',system-ui,sans-serif">+s/. 100.00</td>
+                        <td class="td-cat">Familia</td>
+                        <td class="td-desc">Apoyo de papá para comprar PETG dorado y argollas para llavero</td>
+                    </tr>
+                    <tr class="table-row">
+                        <td class="td-fecha">2026-06-01 23:47:06</td>
+                        <td><span class="type-badge type-gasto">GASTO</span></td>
+                        <td style="font-weight:700;color:#ef4444;font-family:'Space Grotesk',system-ui,sans-serif">-s/. 25.00</td>
+                        <td class="td-cat">Ajuste</td>
+                        <td class="td-desc">Discrepancia caja real vs modelo</td>
+                    </tr>
+                    <tr class="table-row">
+                        <td class="td-fecha">2026-06-01 23:36:48</td>
+                        <td><span class="type-badge type-ingreso">INGRESO</span></td>
+                        <td style="font-weight:700;color:#10b981;font-family:'Space Grotesk',system-ui,sans-serif">+s/. 70.00</td>
+                        <td class="td-cat">Familia</td>
+                        <td class="td-desc">Apoyo de papa para Claude o Gemini</td>
+                    </tr>
+                    <tr class="table-row">
+                        <td class="td-fecha">2026-06-01 23:33:38</td>
+                        <td><span class="type-badge type-ingreso">INGRESO</span></td>
+                        <td style="font-weight:700;color:#10b981;font-family:'Space Grotesk',system-ui,sans-serif">+s/. 5.00</td>
+                        <td class="td-cat">Manitop</td>
+                        <td class="td-desc">Pago Manitop</td>
+                    </tr>
+                    <tr class="table-row">
+                        <td class="td-fecha">2026-06-01 23:32:31</td>
+                        <td><span class="type-badge type-gasto">GASTO</span></td>
+                        <td style="font-weight:700;color:#ef4444;font-family:'Space Grotesk',system-ui,sans-serif">-s/. 7.00</td>
+                        <td class="td-cat">Transporte</td>
+                        <td class="td-desc">Pasaje para UPN</td>
+                    </tr>
+                    <tr class="table-row">
+                        <td class="td-fecha">2026-06-01 23:32:31</td>
+                        <td><span class="type-badge type-gasto">GASTO</span></td>
+                        <td style="font-weight:700;color:#ef4444;font-family:'Space Grotesk',system-ui,sans-serif">-s/. 5.00</td>
+                        <td class="td-cat">Comida</td>
+                        <td class="td-desc">Cena</td>
+                    </tr>
+                    <tr class="table-row">
+                        <td class="td-fecha">2026-06-01 17:15:20</td>
+                        <td><span class="type-badge type-gasto">GASTO</span></td>
+                        <td style="font-weight:700;color:#ef4444;font-family:'Space Grotesk',system-ui,sans-serif">-s/. 12.00</td>
+                        <td class="td-cat">Suscripciones</td>
+                        <td class="td-desc">YouTube Premium 3 meses</td>
+                    </tr>
+                    <tr class="table-row">
+                        <td class="td-fecha">2026-06-01 17:15:20</td>
+                        <td><span class="type-badge type-gasto">GASTO</span></td>
+                        <td style="font-weight:700;color:#ef4444;font-family:'Space Grotesk',system-ui,sans-serif">-s/. 7.00</td>
+                        <td class="td-cat">Suscripciones</td>
+                        <td class="td-desc">Spotify primer mes</td>
+                    </tr>
+                    <tr class="table-row">
+                        <td class="td-fecha">2026-06-01 17:13:42</td>
+                        <td><span class="type-badge type-ingreso">INGRESO</span></td>
+                        <td style="font-weight:700;color:#10b981;font-family:'Space Grotesk',system-ui,sans-serif">+s/. 88.00</td>
+                        <td class="td-cat">Manitop</td>
+                        <td class="td-desc">Segundo pago manitop</td>
+                    </tr>
+                    <tr class="table-row">
+                        <td class="td-fecha">2026-06-01 17:13:42</td>
+                        <td><span class="type-badge type-ingreso">INGRESO</span></td>
+                        <td style="font-weight:700;color:#10b981;font-family:'Space Grotesk',system-ui,sans-serif">+s/. 150.00</td>
+                        <td class="td-cat">Manitop</td>
+                        <td class="td-desc">Primer pago manitop</td>
+                    </tr>
+                    <tr class="table-row">
+                        <td class="td-fecha">2026-06-01 17:13:42</td>
+                        <td><span class="type-badge type-ingreso">INGRESO</span></td>
+                        <td style="font-weight:700;color:#10b981;font-family:'Space Grotesk',system-ui,sans-serif">+s/. 15.00</td>
+                        <td class="td-cat">Ventas</td>
+                        <td class="td-desc">Venta de aguas copa cajamarca</td>
+                    </tr>
+                    <tr class="table-row">
+                        <td class="td-fecha">2026-06-01 17:12:36</td>
+                        <td><span class="type-badge type-ingreso">INGRESO</span></td>
+                        <td style="font-weight:700;color:#10b981;font-family:'Space Grotesk',system-ui,sans-serif">+s/. 60.00</td>
+                        <td class="td-cat">Ventas</td>
+                        <td class="td-desc">Venta de entradas copa cajamarca</td>
+                    </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p style="margin-bottom:.4rem">
+      <em>"La Estrategia de la Barra de Pesas: 90% en lo seguro, 10% en lo audaz. Nunca en el centro frágil."</em>
+    </p>
+    <p>— Nassim Nicholas Taleb &nbsp;|&nbsp; Barbell Finance CLI v4.0 &nbsp;|&nbsp; Zero dependencias externas</p>
+  </footer>
+
+</div>
+</body>
+</html>
